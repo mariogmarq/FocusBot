@@ -2,6 +2,7 @@ import discord
 import os
 import db
 import time
+import handlers
 
 client = discord.Client()
 DB = db.FocusDB(file_name="db.db")
@@ -20,29 +21,21 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content.startswith('$time'):
-        await message.channel.send("You have been focused for {} minutes!".format(DB.get_time(user_id=message.author.id)*60))
+    #Parses message
+    msg = message.content.split()
 
-    elif message.content.startswith('$start'):
-        if message.author.id in user_time.keys():
-            await message.channel.send("You are already focusing!")
-        else:
-            user_time[message.author.id] = time.time()
-            await message.channel.send("You have started to focus!")
+    #Responses
+    if msg[0] == '$time':
+        await handlers.time(message, DB, msg)
 
-    elif message.content.startswith('$end'):
-        if message.author.id in user_time.keys():
-            new_time = time.time() - user_time[message.author.id]
-            hours = float(new_time) / 3600
-            DB.update_time(user_id=message.author.id, time_added=hours)
-            user_time.pop(message.author.id)
-            await message.channel.send("You have stopped focusing!")
-        else:
-            await message.channel.send("You are not focusing!")
+    elif msg[0] == '$start':
+        user_time = await handlers.start(message, user_time)
 
-    elif message.content.startswith('$clear'):
-        DB.update_time(user_id=message.author.id, time_added=-(DB.get_time(user_id=message.author.id)))
-        await message.channel.send("Time cleared!")
+    elif msg[0] == '$end':
+        user_time = await handlers.end(message, user_time, DB)
+
+    elif msg[0] == '$clear':
+        await handlers.clear(message, DB)
 
 
 client.run(os.getenv("TOKEN"))
