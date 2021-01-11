@@ -1,16 +1,24 @@
 import discord
+import os
+import db
 
-class MyClient(discord.Client):
-    async def on_ready(self):
-        print('Logged on as', self.user)
 
-    async def on_message(self, message):
-        # don't respond to ourselves
-        if message.author == self.user:
-            return
+client = discord.Client()
 
-        if message.content == 'ping':
-            await message.channel.send('pong')
+@client.event
+async def on_ready():
+    print('We have logged in as {0.user}'.format(client))
 
-client = MyClient()
-client.run('token')
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+
+    if message.content.startswith('$hello'):
+        await message.channel.send('Hello!')
+
+
+db = db.FocusDB(file_name="db.db")
+print(db.get_time(1))
+
+client.run(os.getenv("TOKEN"))
