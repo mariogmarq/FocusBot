@@ -35,6 +35,7 @@ async def on_message(message):
             new_time = time.time() - user_time[message.author.id]
             hours = float(new_time) / 3600
             DB.update_time(user_id=message.author.id, time_added=hours)
+            user_time.pop(message.author.id)
             await message.channel.send("You have stopped focusing!")
         else:
             await message.channel.send("You are not focusing!")
