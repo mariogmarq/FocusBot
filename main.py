@@ -41,7 +41,7 @@ async def on_message(message):
         await handlers.leader_board(message, client, DB)
 
     elif msg[0] == '$strike':
-        await handlers.max_strike(message, DB)
+        await handlers.max_strike(message, DB, msg)
 
 
 client.run(os.getenv("TOKEN"))
