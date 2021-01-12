@@ -1,7 +1,6 @@
 import discord
 import os
 import db
-import time
 import handlers
 
 client = discord.Client()
@@ -12,6 +11,7 @@ user_time = {}
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
+    await client.change_presence(status=discord.Status.idle, activity=discord.Game("tracking your focus"))
 
 
 @client.event
@@ -36,6 +36,12 @@ async def on_message(message):
 
     elif msg[0] == '$clear':
         await handlers.clear(message, DB)
+
+    elif msg[0] == '$leaders':
+        await handlers.leader_board(message, client, DB)
+
+    elif msg[0] == '$strike':
+        await handlers.max_strike(message, DB)
 
 
 client.run(os.getenv("TOKEN"))
