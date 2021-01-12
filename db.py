@@ -52,7 +52,7 @@ class FocusDB:
         statement = "UPDATE users SET time={} WHERE id={}".format(new_time, user_id)
         self.cursor.execute(statement)
         statement = "UPDATE users SET max_strike={} WHERE id={}".format(time_added, user_id)
-        if self.get_max_strike(user_id)*3600 < time_added:
+        if (self.get_max_strike(user_id)*3600) < time_added:
             self.cursor.execute(statement)
         self.db.commit()
 
