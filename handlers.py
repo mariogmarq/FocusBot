@@ -52,9 +52,11 @@ async def leader_board(message: discord.Message, client: discord.Client, DB: db.
     to_say = ""
     for leader in leaders:
         try:
-            user_id = leader[0][0]
+            user_id = leader[0]
             user = await client.fetch_user(user_id)
-            to_say = to_say + "{} has been focused for {} minutes!\n".format(user.mention, leader[0][1] * 60)
+            print(user)
+            print(leader[0])
+            to_say = to_say + "{} has been focused for {} minutes!\n".format(user.mention, int(leader[1] * 60))
         except Exception as e:
             print(e)
             continue
@@ -63,9 +65,10 @@ async def leader_board(message: discord.Message, client: discord.Client, DB: db.
 
 async def max_strike(message: discord.Message, DB: db.FocusDB, msg: list) -> None:
     strike = DB.get_max_strike(message.author.id)
-    if len(msg) is 1:
+    if len(msg) == 1:
         await message.channel.send("{} your max strike is {} minutes!".format(message.author.mention, int(strike * 60)))
     elif msg[1] == "-s":
-        await message.channel.send("{} your max strike is {} seconds!".format(message.author.mention, int(strike * 3600)))
+        await message.channel.send("{} your max strike is {} seconds!".format(message.author.mention,
+                                                                              int(strike * 3600)))
     elif msg[1] == "-h":
         await message.channel.send("{} your max strike is {} hours!".format(message.author.mention, int(strike)))

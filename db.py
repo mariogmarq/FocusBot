@@ -51,21 +51,14 @@ class FocusDB:
         new_time = time_added + self.get_time(user_id=user_id)
         statement = "UPDATE users SET time={} WHERE id={}".format(new_time, user_id)
         self.cursor.execute(statement)
+
+        #Update strike
         statement = "UPDATE users SET max_strike={} WHERE id={}".format(time_added, user_id)
-        if (self.get_max_strike(user_id)*3600) < time_added:
+        if self.get_max_strike(user_id) < time_added:
             self.cursor.execute(statement)
         self.db.commit()
 
     def leaders(self) -> list:
-        query = "SELECT * FROM users ORDER BY time ASC"
+        query = "SELECT * FROM users ORDER BY time DESC LIMIT 3"
         self.cursor.execute(query)
-
-        rv = []
-
-        for i in range(3):
-            row = self.cursor.fetchall()
-            if row is None:
-                break
-            rv.append(row)
-
-        return rv
+        return self.cursor.fetchall()
